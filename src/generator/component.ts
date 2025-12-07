@@ -23,6 +23,8 @@ export type ResizableIconId = ${generateUnionType(resizableIcons)};
 
 export type IconId = StaticIconId | DynamicIconId | ResizableIconId;
 
+export const iconMetadataMap = ${JSON.stringify(metadata, null, 2)} as const;
+
 type IconProps = ComponentProps<'svg'> & {
   id: IconId;
   size?: number;
