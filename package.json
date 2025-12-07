@@ -44,6 +44,9 @@
     "format:fix": "biome format --write ./src ./bin",
     "check": "biome check ./src ./bin",
     "check:fix": "biome check --write ./src ./bin",
+    "release:patch": "npm version patch && git push --follow-tags",
+    "release:minor": "npm version minor && git push --follow-tags",
+    "release:major": "npm version major && git push --follow-tags",
     "prepublishOnly": "npm run check:fix && npm run build"
   },
   "dependencies": {
