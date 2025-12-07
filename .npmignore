@@ -1,0 +1,22 @@
+# source
+/src/
+/tests/
+/__tests__/
+/test/
+
+# config
+.eslintrc*
+.prettierrc*
+tsconfig.json
+jest.config.*
+vitest.config.*
+playwright.config.*
+
+# local settings
+.vscode/
+.env
+*.local
+
+# git
+.gitignore
+.npmignore
