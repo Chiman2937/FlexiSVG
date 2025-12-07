@@ -1,7 +1,6 @@
 import path from 'node:path';
 import prettier from 'prettier';
 import SVGSpriter from 'svg-sprite';
-import { optimize } from 'svgo';
 import type { IconMetadata, SpriteGeneratorConfig } from '../types/config';
 import { getIconId, getSvgFiles, readSvgFile, writeFile } from '../utils/file';
 import { logger } from '../utils/logger';
@@ -10,15 +9,6 @@ type VariantType = 'static' | 'dynamic' | 'resizable';
 
 interface SvgTransformOptions {
   shouldTransformColors: boolean;
-}
-
-interface ShapeWithVariant {
-  variant?: VariantType;
-  name?: string;
-  id?: string;
-  base?: string;
-  getSVG: () => string;
-  setSVG: (data: string) => void;
 }
 
 function getSvgoConfig(options: SvgTransformOptions) {
@@ -60,20 +50,19 @@ export async function generateSprite(config: SpriteGeneratorConfig): Promise<Ico
         },
       },
       transform: [
-        (shape: ShapeWithVariant, _sprite: any, callback: Function) => {
-          const filePath = shape.name || shape.id || shape.base;
+        (shape: any, _sprite: any, callback: Function) => {
+          const filePath = shape.source?.path || shape.name || shape.id || shape.base;
           if (!filePath) {
             callback(null);
             return;
           }
 
-          const variant = shape.variant as VariantType;
+          // 파일 경로에서 variant 폴더명 추출
+          const normalizedPath = filePath.replace(/\\/g, '/');
+          const shouldTransformColors = normalizedPath.includes('/dynamic/');
 
-          const transformOptions: SvgTransformOptions = {
-            shouldTransformColors: variant === 'dynamic',
-          };
-
-          const svgoConfig = getSvgoConfig(transformOptions);
+          const svgoConfig = getSvgoConfig({ shouldTransformColors });
+          const { optimize } = require('svgo');
           const result = optimize(shape.getSVG(), svgoConfig);
           shape.setSVG(result.data);
           callback(null);
@@ -108,12 +97,6 @@ export async function generateSprite(config: SpriteGeneratorConfig): Promise<Ico
 
       // spriter에 파일 추가
       spriter.add(filePath, null, content);
-
-      // 방금 추가된 shape에 variant 정보 추가
-      const shapes = (spriter as any)._shapes;
-      if (shapes && shapes.length > 0) {
-        shapes[shapes.length - 1].variant = variant;
-      }
     });
   }
 
