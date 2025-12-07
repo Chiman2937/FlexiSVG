@@ -33,4 +33,4 @@ export async function generate(userConfig: Partial<SpriteGeneratorConfig> = {}):
 }
 
 export { DEFAULT_CONFIG } from './config/defaults';
-export { SpriteGeneratorConfig } from './types/config';
+export { IconMetadata, SpriteGeneratorConfig } from './types/config';
