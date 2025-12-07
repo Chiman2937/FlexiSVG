@@ -1,6 +1,6 @@
 import path from 'node:path';
 import prettier from 'prettier';
-import SVGSpriter, { type Config } from 'svg-sprite';
+import SVGSpriter from 'svg-sprite';
 import { optimize } from 'svgo';
 import type { IconMetadata, SpriteGeneratorConfig } from '../types/config';
 import { getIconId, getSvgFiles, readSvgFile, writeFile } from '../utils/file';
@@ -53,7 +53,7 @@ function getSvgoConfig(options: SvgTransformOptions) {
 }
 
 export async function generateSprite(config: SpriteGeneratorConfig): Promise<IconMetadata[]> {
-  const spriterConfig: Config = {
+  const spriterConfig: any = {
     mode: {
       symbol: {
         dest: config.outputSpriteDir,
@@ -67,26 +67,24 @@ export async function generateSprite(config: SpriteGeneratorConfig): Promise<Ico
         },
       },
       transform: [
-        {
-          custom: (shape: ShapeWithVariant, _sprite: any, callback: Function) => {
-            const filePath = shape.name || shape.id || shape.base;
-            if (!filePath) {
-              callback(null);
-              return;
-            }
-
-            const variant = shape.variant as VariantType;
-
-            const transformOptions: SvgTransformOptions = {
-              shouldTransformColors: variant === 'dynamic',
-              shouldRemoveSize: variant === 'dynamic' || variant === 'resizable',
-            };
-
-            const svgoConfig = getSvgoConfig(transformOptions);
-            const result = optimize(shape.getSVG(), svgoConfig);
-            shape.setSVG(result.data);
+        (shape: ShapeWithVariant, _sprite: any, callback: Function) => {
+          const filePath = shape.name || shape.id || shape.base;
+          if (!filePath) {
             callback(null);
-          },
+            return;
+          }
+
+          const variant = shape.variant as VariantType;
+
+          const transformOptions: SvgTransformOptions = {
+            shouldTransformColors: variant === 'dynamic',
+            shouldRemoveSize: variant === 'dynamic' || variant === 'resizable',
+          };
+
+          const svgoConfig = getSvgoConfig(transformOptions);
+          const result = optimize(shape.getSVG(), svgoConfig);
+          shape.setSVG(result.data);
+          callback(null);
         },
       ],
     },
