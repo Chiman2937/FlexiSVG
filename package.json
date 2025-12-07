@@ -7,9 +7,9 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "require": "./dist/index.js",
-      "import": "./dist/index.js"
-    }
+      "default": "./dist/index.js"
+    },
+    "./dist/*": "./dist/*"
   },
   "author": "Chiman2937",
   "license": "MIT",
