@@ -23,31 +23,35 @@ interface ShapeWithVariant {
 }
 
 function getSvgoConfig(options: SvgTransformOptions) {
-  const plugins: any[] = ['preset-default'];
-
-  if (options.shouldTransformColors) {
-    plugins.push({
-      name: 'convertColors',
-      params: {
-        currentColor: true,
-      },
-    });
-    plugins.push({
-      name: 'removeAttrs',
-      params: {
-        attrs: '(stroke|fill):(none|black|#000000)',
-      },
-    });
-  }
-
-  if (options.shouldRemoveSize) {
-    plugins.push({
-      name: 'removeAttrs',
-      params: {
-        attrs: '(width|height)',
-      },
-    });
-  }
+  const plugins: any[] = [
+    'preset-default',
+    ...(options.shouldTransformColors
+      ? [
+          {
+            name: 'convertColors',
+            params: {
+              currentColor: true,
+            },
+          },
+          {
+            name: 'removeAttrs',
+            params: {
+              attrs: '(stroke|fill):(none|black|#000000)',
+            },
+          },
+        ]
+      : []),
+    ...(options.shouldRemoveSize
+      ? [
+          {
+            name: 'removeAttrs',
+            params: {
+              attrs: '(width|height)',
+            },
+          },
+        ]
+      : []),
+  ];
 
   return { plugins };
 }
