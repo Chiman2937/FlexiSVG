@@ -22,7 +22,8 @@
       "complexity": {
         "noExtraBooleanCast": "error",
         "noUselessTypeConstraint": "error",
-        "useFlatMap": "warn"
+        "useFlatMap": "warn",
+        "noBannedTypes": "off"
       },
       "correctness": {
         "noUnusedVariables": "warn"
