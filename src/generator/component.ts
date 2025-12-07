@@ -16,6 +16,7 @@ function generateIconComponent(metadata: IconMetadata[], spriteWebPath: string):
 
   return `// This file is auto-generated. Do not edit manually.
 import { type ComponentProps } from 'react';
+import type { IconMetadata } from 'flexisvg';
 
 export type StaticIconId = ${generateUnionType(staticIcons)};
 export type DynamicIconId = ${generateUnionType(dynamicIcons)};
@@ -36,7 +37,7 @@ export const Icon = ({ id, size = 24, ...props }: IconProps) => {
   );
 };
 
-export const iconMetadataMap = ${JSON.stringify(metadata, null, 2)} as const;
+export const iconMetadataMap: IconMetadata[] = ${JSON.stringify(metadata, null, 2)};
 
 `;
 }
