@@ -3,7 +3,7 @@ import type { IconMetadata } from '../types/config';
 import { writeFile } from '../utils/file';
 import { logger } from '../utils/logger';
 
-function generateIconComponent(metadata: IconMetadata[]): string {
+function generateIconComponent(metadata: IconMetadata[], spriteWebPath: string): string {
   // variant별로 그룹화
   const staticIcons = metadata.filter((m) => m.variant === 'static').map((m) => m.id);
   const dynamicIcons = metadata.filter((m) => m.variant === 'dynamic').map((m) => m.id);
@@ -31,7 +31,7 @@ type IconProps = ComponentProps<'svg'> & {
 export const Icon = ({ id, size = 24, ...props }: IconProps) => {
   return (
     <svg width={size} height={size} {...props}>
-      <use href={\`/sprite.svg#\${id}\`} />
+      <use href={\`${spriteWebPath}#\${id}\`} />
     </svg>
   );
 };
@@ -40,10 +40,11 @@ export const Icon = ({ id, size = 24, ...props }: IconProps) => {
 
 export async function generateComponent(
   outputPath: string,
-  metadata: IconMetadata[]
+  metadata: IconMetadata[],
+  spriteWebPath: string
 ): Promise<void> {
   try {
-    const componentCode = generateIconComponent(metadata);
+    const componentCode = generateIconComponent(metadata, spriteWebPath);
 
     const formatted = await prettier.format(componentCode, {
       parser: 'typescript',

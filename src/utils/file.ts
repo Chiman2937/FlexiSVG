@@ -28,3 +28,22 @@ export function writeFile(filePath: string, content: string): void {
 export function getIconId(fileName: string): string {
   return path.basename(fileName, '.svg').replace(/^icon-/, '');
 }
+
+/**
+ * Convert outputSpriteDir to web-accessible sprite path
+ * @param outputSpriteDir - e.g., "public/icons" or "public"
+ * @returns Web path - e.g., "/icons/sprite.svg" or "/sprite.svg"
+ */
+export function getSpriteWebPath(outputSpriteDir: string): string {
+  // Normalize path separators to forward slashes
+  const normalized = outputSpriteDir.replace(/\\/g, '/');
+
+  // Remove 'public' prefix if exists
+  const withoutPublic = normalized.replace(/^public\/?/, '');
+
+  // Add leading slash and sprite.svg
+  const webPath = withoutPublic ? `/${withoutPublic}/sprite.svg` : '/sprite.svg';
+
+  // Clean up any double slashes
+  return webPath.replace(/\/+/g, '/');
+}
