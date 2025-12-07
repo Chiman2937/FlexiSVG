@@ -4,9 +4,9 @@ SVG sprite generator with automatic TypeScript type generation for React project
 
 ## Features
 
-- **Three Icon Variants**: Static, Dynamic, and Resizable icons
+- **Two Icon Variants**: Dynamic and Resizable icons
 - **Automatic Sprite Generation**: Combines multiple SVG files into a single optimized sprite
-- **TypeScript Support**: Auto-generated type-safe Icon component
+- **TypeScript Support**: Auto-generated type-safe Icon component with `.ts` config file support
 - **Optimized**: Uses SVGO for SVG optimization
 - **Easy Integration**: Simple CLI commands for initialization and generation
 
@@ -37,7 +37,6 @@ pnpm dlx flexisvg init
 This will create:
 
 - `flexisvg.config.ts` - Configuration file
-- `public/icons/static/` - Static icons folder
 - `public/icons/dynamic/` - Dynamic icons folder
 - `public/icons/resizable/` - Resizable icons folder
 - `src/components/` - Output folder for Icon component
@@ -46,9 +45,8 @@ This will create:
 
 Place your SVG files in the appropriate folders:
 
-- **static**: Icons with fixed size and color
-- **dynamic**: Icons with customizable size and color
-- **resizable**: Icons with customizable size only
+- **dynamic**: Icons with customizable size and color (colors converted to `currentColor`)
+- **resizable**: Icons with customizable size only (keeps original colors)
 
 ### 3. Generate Sprite
 
@@ -72,12 +70,11 @@ import { SpriteGeneratorConfig } from 'flexisvg';
 
 const config: SpriteGeneratorConfig = {
   // Input directories
-  staticDir: 'public/icons/static',
   dynamicDir: 'public/icons/dynamic',
   resizableDir: 'public/icons/resizable',
 
   // Output paths
-  outputSpriteDir: 'public',
+  outputSpriteDir: 'public/icons',
   outputComponentPath: 'src/components/icon/index.tsx',
 };
 
@@ -88,7 +85,6 @@ export default config;
 
 | Option                | Type     | Description                                               |
 | --------------------- | -------- | --------------------------------------------------------- |
-| `staticDir`           | `string` | Directory for static icons (fixed size and color)         |
 | `dynamicDir`          | `string` | Directory for dynamic icons (customizable size and color) |
 | `resizableDir`        | `string` | Directory for resizable icons (customizable size only)    |
 | `outputSpriteDir`     | `string` | Output directory for `sprite.svg`                         |
@@ -96,25 +92,13 @@ export default config;
 
 ## Icon Variants
 
-### Static Icons
-
-- **Use case**: Icons that should never change in size or color
-- **Processing**: No modifications applied
-- **Example**: Logos, brand icons
-
-```
-public/icons/static/
-  ├─ logo.svg
-  └─ brand-icon.svg
-```
-
 ### Dynamic Icons
 
 - **Use case**: Icons that need both size and color customization
 - **Processing**:
-  - Removes `width` and `height` attributes
-  - Converts colors to `currentColor`
+  - Converts all colors to `currentColor` (inherits CSS `color` property)
   - Removes `fill` and `stroke` attributes with values `none`, `black`, or `#000000`
+  - SVG `<symbol>` automatically handles size via `viewBox`
 - **Example**: UI icons, action buttons
 
 ```
@@ -124,16 +108,31 @@ public/icons/dynamic/
   └─ settings.svg
 ```
 
+**Before processing:**
+```xml
+<svg fill="none" viewBox="0 0 24 24">
+  <path fill="#7C868F" d="M12..." />
+</svg>
+```
+
+**After processing:**
+```xml
+<symbol fill="none" viewBox="0 0 24 24" id="home">
+  <path fill="currentColor" d="M12..." />
+</symbol>
+```
+
 ### Resizable Icons
 
 - **Use case**: Icons that need size customization but should keep original colors
-- **Processing**: Removes `width` and `height` attributes only
-- **Example**: Colored illustrations, multi-color icons
+- **Processing**: Only converts to `<symbol>` format, preserves all original colors
+- **Example**: Colored illustrations, multi-color icons, brand logos
 
 ```
 public/icons/resizable/
   ├─ illustration-1.svg
-  └─ colored-icon.svg
+  ├─ colored-icon.svg
+  └─ brand-logo.svg
 ```
 
 ## Generated Output
@@ -160,10 +159,9 @@ A type-safe React component with auto-generated types:
 
 ```typescript
 // Auto-generated types
-export type StaticIconId = 'logo' | 'brand-icon';
 export type DynamicIconId = 'home' | 'user' | 'settings';
-export type ResizableIconId = 'illustration-1' | 'colored-icon';
-export type IconId = StaticIconId | DynamicIconId | ResizableIconId;
+export type ResizableIconId = 'illustration-1' | 'colored-icon' | 'brand-logo';
+export type IconId = DynamicIconId | ResizableIconId;
 
 // Icon component
 export const Icon = ({ id, size = 24, ...props }: IconProps) => {
