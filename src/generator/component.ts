@@ -5,7 +5,6 @@ import { logger } from '../utils/logger';
 
 function generateIconComponent(metadata: IconMetadata[], spriteWebPath: string): string {
   // variant별로 그룹화
-  const staticIcons = metadata.filter((m) => m.variant === 'static').map((m) => m.id);
   const dynamicIcons = metadata.filter((m) => m.variant === 'dynamic').map((m) => m.id);
   const resizableIcons = metadata.filter((m) => m.variant === 'resizable').map((m) => m.id);
 
@@ -18,11 +17,10 @@ function generateIconComponent(metadata: IconMetadata[], spriteWebPath: string):
 import { type ComponentProps } from 'react';
 import type { IconMetadata } from 'flexisvg';
 
-export type StaticIconId = ${generateUnionType(staticIcons)};
 export type DynamicIconId = ${generateUnionType(dynamicIcons)};
 export type ResizableIconId = ${generateUnionType(resizableIcons)};
 
-export type IconId = StaticIconId | DynamicIconId | ResizableIconId;
+export type IconId = DynamicIconId | ResizableIconId;
 
 type IconProps = ComponentProps<'svg'> & {
   id: IconId;

@@ -5,7 +5,7 @@ import type { IconMetadata, SpriteGeneratorConfig } from '../types/config';
 import { getIconId, getSvgFiles, readSvgFile, writeFile } from '../utils/file';
 import { logger } from '../utils/logger';
 
-type VariantType = 'static' | 'dynamic' | 'resizable';
+type VariantType = 'dynamic' | 'resizable';
 
 interface SvgTransformOptions {
   shouldTransformColors: boolean;
@@ -79,7 +79,6 @@ export async function generateSprite(config: SpriteGeneratorConfig): Promise<Ico
     dir: keyof SpriteGeneratorConfig;
     variant: VariantType;
   }> = [
-    { dir: 'staticDir', variant: 'static' },
     { dir: 'dynamicDir', variant: 'dynamic' },
     { dir: 'resizableDir', variant: 'resizable' },
   ];

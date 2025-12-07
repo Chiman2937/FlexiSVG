@@ -27,7 +27,6 @@ program
 
       // 디렉토리 생성
       const directories = [
-        'public/icons/static',
         'public/icons/dynamic',
         'public/icons/resizable',
         'public',
