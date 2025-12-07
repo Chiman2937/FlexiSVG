@@ -4,6 +4,7 @@ const path = require('node:path');
 const fs = require('node:fs');
 const { program } = require('commander');
 const { generate } = require('../dist/index');
+const { createJiti } = require('jiti');
 
 // init 명령어
 program
@@ -56,17 +57,51 @@ program
 program
   .name('flexisvg')
   .description('Generate SVG sprite and Icon component with TypeScript types')
-  .option('-c, --config <path>', 'Path to config file', 'svg-sprite.config.js')
+  .option('-c, --config <path>', 'Path to config file')
   .action(async (options) => {
     try {
       let config = {};
 
+      // config 파일 찾기
+      let configPath = null;
+      if (options.config) {
+        configPath = path.resolve(process.cwd(), options.config);
+      } else {
+        // 가능한 config 파일 경로들 순서대로 확인
+        const possiblePaths = [
+          'flexisvg.config.ts',
+          'flexisvg.config.cjs',
+          'flexisvg.config.js',
+          'flexisvg.config.mjs',
+        ];
+
+        for (const p of possiblePaths) {
+          const fullPath = path.resolve(process.cwd(), p);
+          if (fs.existsSync(fullPath)) {
+            configPath = fullPath;
+            break;
+          }
+        }
+      }
+
       // config 파일이 있으면 로드
-      const configPath = path.resolve(process.cwd(), options.config);
-      try {
-        config = require(configPath);
-        console.log(`ℹ️  Using config from: ${configPath}`);
-      } catch (_err) {
+      if (configPath && fs.existsSync(configPath)) {
+        try {
+          // .ts 파일은 jiti로 로드, 나머지는 require
+          let loadedConfig;
+          if (configPath.endsWith('.ts')) {
+            const jiti = createJiti(__filename);
+            loadedConfig = jiti(configPath);
+          } else {
+            loadedConfig = require(configPath);
+          }
+          config = loadedConfig.default || loadedConfig;
+          console.log(`ℹ️  Using config from: ${configPath}`);
+        } catch (err) {
+          console.error('⚠️  Failed to load config file:', err.message);
+          console.log('ℹ️  Using default configuration');
+        }
+      } else {
         console.log('ℹ️  No config file found, using default configuration');
       }
 
