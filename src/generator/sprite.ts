@@ -10,7 +10,6 @@ type VariantType = 'static' | 'dynamic' | 'resizable';
 
 interface SvgTransformOptions {
   shouldTransformColors: boolean;
-  shouldRemoveSize: boolean;
 }
 
 interface ShapeWithVariant {
@@ -37,16 +36,6 @@ function getSvgoConfig(options: SvgTransformOptions) {
             name: 'removeAttrs',
             params: {
               attrs: '(stroke|fill):(none|black|#000000)',
-            },
-          },
-        ]
-      : []),
-    ...(options.shouldRemoveSize
-      ? [
-          {
-            name: 'removeAttrs',
-            params: {
-              attrs: '(width|height)',
             },
           },
         ]
@@ -82,7 +71,6 @@ export async function generateSprite(config: SpriteGeneratorConfig): Promise<Ico
 
           const transformOptions: SvgTransformOptions = {
             shouldTransformColors: variant === 'dynamic',
-            shouldRemoveSize: variant === 'dynamic' || variant === 'resizable',
           };
 
           const svgoConfig = getSvgoConfig(transformOptions);
