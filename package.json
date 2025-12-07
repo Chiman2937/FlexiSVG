@@ -1,6 +1,6 @@
 {
   "name": "flexisvg",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "SVG sprite generator with TypeScript type generation",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
